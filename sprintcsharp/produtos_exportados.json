@@ -1,0 +1,107 @@
+[
+  {
+    "Id": 1,
+    "Nome": "Tesouro Selic",
+    "Tipo": "Renda Fixa",
+    "Risco": "Baixo",
+    "Preco": 108.5
+  },
+  {
+    "Id": 2,
+    "Nome": "CDB PagSeguro",
+    "Tipo": "Renda Fixa",
+    "Risco": "Baixo",
+    "Preco": 100
+  },
+  {
+    "Id": 3,
+    "Nome": "Fundo Imobili\u00E1rio HGLG11",
+    "Tipo": "FII",
+    "Risco": "M\u00E9dio",
+    "Preco": 162.3
+  },
+  {
+    "Id": 4,
+    "Nome": "Fundo de A\u00E7\u00F5es Tech",
+    "Tipo": "A\u00E7\u00F5es",
+    "Risco": "Alto",
+    "Preco": 85.2
+  },
+  {
+    "Id": 5,
+    "Nome": "A\u00E7\u00F5es da Petrobras",
+    "Tipo": "A\u00E7\u00F5es",
+    "Risco": "Alto",
+    "Preco": 34.75
+  },
+  {
+    "Id": 6,
+    "Nome": "CDB Banco Inter",
+    "Tipo": "Renda Fixa",
+    "Risco": "Baixo",
+    "Preco": 100
+  },
+  {
+    "Id": 7,
+    "Nome": "CDB Nubank",
+    "Tipo": "Renda Fixa",
+    "Risco": "Baixo",
+    "Preco": 1
+  },
+  {
+    "Id": 8,
+    "Nome": "Fundo Imobili\u00E1rio MXRF11",
+    "Tipo": "FII",
+    "Risco": "M\u00E9dio",
+    "Preco": 10.55
+  },
+  {
+    "Id": 9,
+    "Nome": "Fundo Imobili\u00E1rio XPML11",
+    "Tipo": "FII",
+    "Risco": "M\u00E9dio",
+    "Preco": 115.7
+  },
+  {
+    "Id": 10,
+    "Nome": "ETF BOVA11 (Ibovespa)",
+    "Tipo": "A\u00E7\u00F5es",
+    "Risco": "Alto",
+    "Preco": 112.3
+  },
+  {
+    "Id": 11,
+    "Nome": "BDR Google (GOGL34)",
+    "Tipo": "BDR",
+    "Risco": "Alto",
+    "Preco": 58.9
+  },
+  {
+    "Id": 12,
+    "Nome": "BDR Apple (AAPL34)",
+    "Tipo": "BDR",
+    "Risco": "Alto",
+    "Preco": 89.65
+  },
+  {
+    "Id": 13,
+    "Nome": "Cripto Bitcoin (BTC)",
+    "Tipo": "Cripto",
+    "Risco": "Alto",
+    "Preco": 150000
+  },
+  {
+    "Id": 14,
+    "Nome": "Cripto Ethereum (ETH)",
+    "Tipo": "Cripto",
+    "Risco": "Alto",
+    "Preco": 9500
+  },
+  {
+    "Id": 15,
+    "Nome": "BVMF Magalu (MGLU3)",
+    "Tipo": "A\u00E7\u00F5es",
+    "Risco": "Alto",
+    "Preco": 1109
+  }
+]
