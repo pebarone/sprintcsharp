@@ -1,19 +1,19 @@
 # Gestor de Investimentos - Painel Administrativo
 
-Este projeto consiste em uma aplicaÁ„o de console desenvolvida em C# como um painel administrativo para gerenciar os dados da plataforma "Assessor de Investimentos Virtual".
+Este projeto consiste em uma aplica√ß√£o de console desenvolvida em C# como um painel administrativo para gerenciar os dados da plataforma "Assessor de Investimentos Virtual".
 
-A aplicaÁ„o se conecta diretamente a um banco de dados Oracle para realizar operaÁıes de CRUD (Create, Read, Update, Delete) sobre as entidades do sistema, com foco inicial no gerenciamento de produtos de investimento.
+A aplica√ß√£o se conecta diretamente a um banco de dados Oracle para realizar opera√ß√µes de CRUD (Create, Read, Update, Delete) sobre as entidades do sistema, com foco inicial no gerenciamento de produtos de investimento.
 
 ## Funcionalidades
 
--   **CRUD de Produtos:** Gerenciamento completo do cat·logo de produtos de investimento.
+-   **CRUD de Produtos:** Gerenciamento completo do cat√°logo de produtos de investimento.
     -   Listar todos os produtos.
     -   Adicionar um novo produto.
-    -   Atualizar as informaÁıes de um produto existente.
+    -   Atualizar as informa√ß√µes de um produto existente.
     -   Deletar um produto.
--   **ManipulaÁ„o de Arquivos:**
+-   **Manipula√ß√£o de Arquivos:**
     -   **Exportar:** Salva a lista completa de produtos do banco de dados em um arquivo local `produtos_exportados.json`.
-    -   **Importar:** LÍ um arquivo `produtos_exportados.json` e insere os registros no banco de dados.
+    -   **Importar:** L√™ um arquivo `produtos_exportados.json` e insere os registros no banco de dados.
 
 ## Tecnologias Utilizadas
 
@@ -24,39 +24,39 @@ A aplicaÁ„o se conecta diretamente a um banco de dados Oracle para realizar oper
 
 ## Estrutura do Projeto
 
-O cÛdigo foi organizado seguindo princÌpios de separaÁ„o de responsabilidades para garantir um cÛdigo limpo e de f·cil manutenÁ„o:
+O c√≥digo foi organizado seguindo princ√≠pios de separa√ß√£o de responsabilidades para garantir um c√≥digo limpo e de f√°cil manuten√ß√£o:
 
--   **/Data**: ContÈm as classes respons·veis pela comunicaÁ„o com o banco de dados.
-    -   `DatabaseConnection.cs`: Gerencia a string de conex„o e a abertura de conexıes com o Oracle.
-    -   `ProdutoInvestimentoRepository.cs`: Implementa os mÈtodos de CRUD para os produtos.
--   **/Models**: ContÈm as classes que representam as entidades do banco de dados.
+-   **/Data**: Cont√©m as classes respons√°veis pela comunica√ß√£o com o banco de dados.
+    -   `DatabaseConnection.cs`: Gerencia a string de conex√£o e a abertura de conex√µes com o Oracle.
+    -   `ProdutoInvestimentoRepository.cs`: Implementa os m√©todos de CRUD para os produtos.
+-   **/Models**: Cont√©m as classes que representam as entidades do banco de dados.
     -   `ProdutoInvestimento.cs`: Representa a tabela `investimento_produto`.
--   **/Services**: ContÈm a lÛgica para funcionalidades auxiliares.
-    -   `FileService.cs`: Implementa a exportaÁ„o e importaÁ„o de dados para JSON.
--   `Program.cs`: Ponto de entrada da aplicaÁ„o, respons·vel pela interface do usu·rio no console.
+-   **/Services**: Cont√©m a l√≥gica para funcionalidades auxiliares.
+    -   `FileService.cs`: Implementa a exporta√ß√£o e importa√ß√£o de dados para JSON.
+-   `Program.cs`: Ponto de entrada da aplica√ß√£o, respons√°vel pela interface do usu√°rio no console.
 
-## PrÈ-requisitos
+## Pr√©-requisitos
 
 -   [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 -   Acesso ao banco de dados Oracle da Fiap.
 
 ## Como Executar
 
-1.  **Clone o repositÛrio:**
+1.  **Clone o reposit√≥rio:**
     ```bash
-    git clone [URL_DO_SEU_REPOSITORIO_AQUI]
+    git clone https://github.com/pbrnx/sprintcsharp.git
     cd sprintcsharp
     ```
 
-2.  **Restaure as dependÍncias:**
-    O .NET far· isso automaticamente na primeira vez que vocÍ executar, mas se necess·rio, use o comando:
+2.  **Restaure as depend√™ncias:**
+    O .NET far√° isso automaticamente na primeira vez que voc√™ executar, mas se necess√°rio, use o comando:
     ```bash
     dotnet restore
     ```
 
-3.  **Execute a aplicaÁ„o:**
+3.  **Execute a aplica√ß√£o:**
     ```bash
     dotnet run
     ```
 
-    ApÛs a execuÁ„o, um menu interativo aparecer· no console, permitindo o uso de todas as funcionalidades.
+    Ap√≥s a execu√ß√£o, um menu interativo aparecer√° no console, permitindo o uso de todas as funcionalidades.
