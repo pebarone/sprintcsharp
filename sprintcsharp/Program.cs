@@ -1,212 +1,123 @@
 ﻿// Local: sprintcsharp/Program.cs
-
-// 1. Importar as classes que criamos em outras pastas
+using Microsoft.EntityFrameworkCore;
 using sprintcsharp.Data;
 using sprintcsharp.Models;
-using sprintcsharp.Services; // <-- ADICIONADO
+using sprintcsharp.Services; // Importa o novo ApiClientService
 
-// Instanciar nossos serviços e repositórios
-var repositorio = new ProdutoInvestimentoRepository();
-var fileService = new FileService(); // <-- ADICIONADO
+var builder = WebApplication.CreateBuilder(args);
 
-// Loop principal do menu
-while (true)
+// --- 1. Configurar Serviços ---
+
+// Pega a string de conexão do appsettings.json
+var connectionString = builder.Configuration.GetConnectionString("OracleConnection");
+
+// Adiciona o DbContext (Requisito 1: EF Core)
+builder.Services.AddDbContext<MeuDbContext>(options =>
+    options.UseOracle(connectionString)
+);
+
+// Adiciona o Repositório (que agora usa EF)
+builder.Services.AddScoped<ProdutoInvestimentoRepository>();
+
+// Adiciona o Swagger (Requisito 1: API e Documentação)
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Adiciona o HttpClient (para o Requisito 4)
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<ApiClientService>();
+
+
+var app = builder.Build();
+
+// --- 2. Configurar o Pipeline (Middleware) ---
+
+// Habilita o Swagger (Interface gráfica da documentação)
+if (app.Environment.IsDevelopment())
 {
-    Console.WriteLine("\n--- Gestor de Produtos de Investimento ---");
-    Console.WriteLine("1. Listar todos os produtos");
-    Console.WriteLine("2. Adicionar novo produto");
-    Console.WriteLine("3. Atualizar produto existente");
-    Console.WriteLine("4. Deletar produto");
-    Console.WriteLine("5. Exportar produtos para JSON"); // <-- ADICIONADO
-    Console.WriteLine("6. Importar produtos de JSON"); // <-- ADICIONADO
-    Console.WriteLine("0. Sair");
-    Console.Write("Escolha uma opção: ");
-
-    var opcao = Console.ReadLine();
-
-    switch (opcao)
-    {
-        case "1":
-            ListarProdutos();
-            break;
-        case "2":
-            AdicionarProduto();
-            break;
-        case "3":
-            AtualizarProduto();
-            break;
-        case "4":
-            DeletarProduto();
-            break;
-        case "5": // <-- ADICIONADO
-            ExportarProdutos();
-            break;
-        case "6": // <-- ADICIONADO
-            ImportarProdutos();
-            break;
-        case "0":
-            Console.WriteLine("Saindo...");
-            return;
-        default:
-            Console.WriteLine("Opção inválida! Tente novamente.");
-            break;
-    }
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-// ---- MÉTODOS PARA CADA OPÇÃO DO MENU ----
-// (Os métodos Listar, Adicionar, Atualizar e Deletar continuam os mesmos)
+app.UseHttpsRedirection();
 
-void ListarProdutos()
+// --- 3. Definir os Endpoints (CRUD) ---
+
+// Endpoint principal
+app.MapGet("/", () => "API de Produtos de Investimento está online.");
+
+// GET /produtos (Listar todos)
+app.MapGet("/produtos", (ProdutoInvestimentoRepository repo) =>
 {
-    Console.WriteLine("\n--- Lista de Produtos ---");
-    try
-    {
-        var produtos = repositorio.GetAll();
-        if (produtos.Count == 0)
-        {
-            Console.WriteLine("Nenhum produto cadastrado.");
-            return;
-        }
-        foreach (var produto in produtos)
-        {
-            Console.WriteLine(produto.ToString());
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Ocorreu um erro ao listar os produtos: {ex.Message}");
-    }
-}
+    return Results.Ok(repo.GetAll()); // Usa o repositório com LINQ
+})
+.WithTags("CRUD Produtos (EF Core)")
+.Produces<List<ProdutoInvestimento>>(200);
 
-void AdicionarProduto()
+// GET /produtos/{id} (Buscar por ID)
+app.MapGet("/produtos/{id}", (int id, ProdutoInvestimentoRepository repo) =>
 {
-    Console.WriteLine("\n--- Adicionar Novo Produto ---");
-    try
-    {
-        Console.Write("Nome: ");
-        var nome = Console.ReadLine();
-        Console.Write("Tipo (ex: Renda Fixa, Ações): ");
-        var tipo = Console.ReadLine();
-        Console.Write("Risco (Baixo, Médio, Alto): ");
-        var risco = Console.ReadLine();
-        Console.Write("Preço: ");
-        var preco = Convert.ToDecimal(Console.ReadLine());
-        var novoProduto = new ProdutoInvestimento { Nome = nome, Tipo = tipo, Risco = risco, Preco = preco };
-        repositorio.Add(novoProduto);
-        Console.WriteLine("Produto adicionado com sucesso!");
-    }
-    catch (FormatException)
-    {
-        Console.WriteLine("Erro: O preço deve ser um número válido.");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Ocorreu um erro ao adicionar o produto: {ex.Message}");
-    }
-}
+    var produto = repo.GetById(id);
+    return produto != null ? Results.Ok(produto) : Results.NotFound();
+})
+.WithTags("CRUD Produtos (EF Core)")
+.Produces<ProdutoInvestimento>(200)
+.Produces(404);
 
-void AtualizarProduto()
+// POST /produtos (Adicionar novo)
+app.MapPost("/produtos", (ProdutoInvestimento produto, ProdutoInvestimentoRepository repo) =>
 {
-    Console.WriteLine("\n--- Atualizar Produto ---");
-    ListarProdutos();
-    Console.Write("\nDigite o ID do produto que deseja atualizar: ");
-    try
-    {
-        var id = Convert.ToInt32(Console.ReadLine());
-        Console.Write("Novo Nome: ");
-        var nome = Console.ReadLine();
-        Console.Write("Novo Tipo: ");
-        var tipo = Console.ReadLine();
-        Console.Write("Novo Risco (Baixo, Médio, Alto): ");
-        var risco = Console.ReadLine();
-        Console.Write("Novo Preço: ");
-        var preco = Convert.ToDecimal(Console.ReadLine());
-        var produtoAtualizado = new ProdutoInvestimento { Id = id, Nome = nome, Tipo = tipo, Risco = risco, Preco = preco };
-        repositorio.Update(produtoAtualizado);
-        Console.WriteLine("Produto atualizado com sucesso!");
-    }
-    catch (FormatException)
-    {
-        Console.WriteLine("Erro: O ID e o preço devem ser números válidos.");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Ocorreu um erro ao atualizar o produto: {ex.Message}");
-    }
-}
+    repo.Add(produto);
+    return Results.Created($"/produtos/{produto.Id}", produto);
+})
+.WithTags("CRUD Produtos (EF Core)")
+.Produces<ProdutoInvestimento>(201);
 
-void DeletarProduto()
+// PUT /produtos/{id} (Atualizar)
+app.MapPut("/produtos/{id}", (int id, ProdutoInvestimento produto, ProdutoInvestimentoRepository repo) =>
 {
-    Console.WriteLine("\n--- Deletar Produto ---");
-    ListarProdutos();
-    Console.Write("\nDigite o ID do produto que deseja deletar: ");
-    try
-    {
-        var id = Convert.ToInt32(Console.ReadLine());
-        Console.Write($"Tem certeza que deseja deletar o produto com ID {id}? (s/n): ");
-        var confirmacao = Console.ReadLine();
-        if (confirmacao?.ToLower() == "s")
-        {
-            repositorio.Delete(id);
-            Console.WriteLine("Produto deletado com sucesso!");
-        }
-        else
-        {
-            Console.WriteLine("Operação cancelada.");
-        }
-    }
-    catch (FormatException)
-    {
-        Console.WriteLine("Erro: O ID deve ser um número válido.");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Ocorreu um erro ao deletar o produto: {ex.Message}");
-    }
-}
+    if (id != produto.Id) return Results.BadRequest("ID da URL não bate com o ID do corpo");
 
-// ---- NOVOS MÉTODOS PARA IMPORTAR E EXPORTAR ----
+    var existente = repo.GetById(id);
+    if (existente == null) return Results.NotFound();
 
-void ExportarProdutos() // <-- NOVO MÉTODO
+    repo.Update(produto);
+    return Results.Ok(produto);
+})
+.WithTags("CRUD Produtos (EF Core)")
+.Produces<ProdutoInvestimento>(200)
+.Produces(400)
+.Produces(404);
+
+// DELETE /produtos/{id} (Deletar)
+app.MapDelete("/produtos/{id}", (int id, ProdutoInvestimentoRepository repo) =>
 {
-    Console.WriteLine("\n--- Exportar Produtos para JSON ---");
-    try
-    {
-        // 1. Busca todos os produtos do banco de dados
-        var produtosDoBanco = repositorio.GetAll();
-        // 2. Chama o FileService para salvá-los no arquivo
-        fileService.ExportarParaJson(produtosDoBanco);
-        Console.WriteLine("Produtos exportados com sucesso para o arquivo 'produtos_exportados.json'!");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Ocorreu um erro ao exportar os produtos: {ex.Message}");
-    }
-}
+    var existente = repo.GetById(id);
+    if (existente == null) return Results.NotFound();
 
-void ImportarProdutos() // <-- NOVO MÉTODO
+    repo.Delete(id);
+    return Results.NoContent();
+})
+.WithTags("CRUD Produtos (EF Core)")
+.Produces(204)
+.Produces(404);
+
+
+// --- 4. Endpoint para o Requisito 4 (Conectar com outra API) ---
+
+app.MapGet("/investimentos-externos", async (ApiClientService apiClient) =>
 {
-    Console.WriteLine("\n--- Importar Produtos de JSON ---");
-    try
+    var produtosExternos = await apiClient.GetProdutosDaApiExterna();
+    if (produtosExternos == null)
     {
-        // 1. Chama o FileService para ler a lista de produtos do arquivo
-        var produtosDoArquivo = fileService.ImportarDeJson();
-        if (produtosDoArquivo.Count == 0)
-        {
-            Console.WriteLine("Nenhum produto encontrado no arquivo de importação ou o arquivo não existe.");
-            return;
-        }
+        return Results.StatusCode(502); // Bad Gateway (erro ao falar com a outra API)
+    }
+    return Results.Ok(produtosExternos);
+})
+.WithTags("API Externa (Requisito 4)")
+.Produces<List<ProdutoApiExterna>>(200)
+.Produces(502); // Erro
 
-        // 2. Para cada produto encontrado no arquivo, adiciona no banco de dados
-        foreach (var produto in produtosDoArquivo)
-        {
-            // O ID não é necessário, pois o banco irá gerar um novo
-            repositorio.Add(produto);
-        }
-        Console.WriteLine($"{produtosDoArquivo.Count} produtos foram importados com sucesso para o banco de dados!");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Ocorreu um erro ao importar os produtos: {ex.Message}");
-    }
-}
+
+// --- 5. Rodar a API ---
+app.Run();

@@ -1,81 +1,58 @@
 ﻿// Local: sprintcsharp/Data/ProdutoInvestimentoRepository.cs
-using sprintcsharp.Models; // <-- Atenção aqui, vamos criar a pasta Models logo em seguida
-using Oracle.ManagedDataAccess.Client;
-using System.Data;
+using Microsoft.EntityFrameworkCore;
+using sprintcsharp.Models;
+using System.Collections.Generic;
+using System.Linq; // <-- Importante para o LINQ
 
-namespace sprintcsharp.Data; // O namespace muda para corresponder ao seu nome de projeto
+namespace sprintcsharp.Data;
 
 public class ProdutoInvestimentoRepository
 {
-    private readonly DatabaseConnection _dbConnection;
+    // 1. Injeta o DbContext (Requisito EF)
+    private readonly MeuDbContext _context;
 
-    public ProdutoInvestimentoRepository()
+    public ProdutoInvestimentoRepository(MeuDbContext context)
     {
-        _dbConnection = new DatabaseConnection();
+        _context = context;
     }
 
-    // READ - Listar todos os produtos
+    // READ (GET) - Usando LINQ
     public List<ProdutoInvestimento> GetAll()
     {
-        var produtos = new List<ProdutoInvestimento>();
-        using var conn = _dbConnection.GetConnection();
-
-        var cmd = new OracleCommand("SELECT id, nome, tipo, risco, preco FROM investimento_produto ORDER BY id", conn);
-
-        using var reader = cmd.ExecuteReader();
-        while (reader.Read())
-        {
-            produtos.Add(new ProdutoInvestimento
-            {
-                Id = Convert.ToInt32(reader["id"]),
-                Nome = reader["nome"].ToString()!,
-                Tipo = reader["tipo"].ToString()!,
-                Risco = reader["risco"].ToString()!,
-                Preco = Convert.ToDecimal(reader["preco"])
-            });
-        }
-        return produtos;
+        // 2. LINQ: .ToList() busca todos os produtos
+        return _context.ProdutosInvestimento.ToList();
     }
 
-    // CREATE - Adicionar um novo produto
+    // READ (GET BY ID) - Usando LINQ
+    public ProdutoInvestimento? GetById(int id)
+    {
+        // 3. LINQ: .FirstOrDefault() busca o primeiro que bate com a condição
+        return _context.ProdutosInvestimento.FirstOrDefault(p => p.Id == id);
+    }
+
+    // CREATE (POST) - Usando EF
     public void Add(ProdutoInvestimento produto)
     {
-        using var conn = _dbConnection.GetConnection();
-        var sql = "INSERT INTO investimento_produto (nome, tipo, risco, preco) VALUES (:nome, :tipo, :risco, :preco)";
-        using var cmd = new OracleCommand(sql, conn);
-
-        cmd.Parameters.Add(new OracleParameter("nome", produto.Nome));
-        cmd.Parameters.Add(new OracleParameter("tipo", produto.Tipo));
-        cmd.Parameters.Add(new OracleParameter("risco", produto.Risco));
-        cmd.Parameters.Add(new OracleParameter("preco", produto.Preco));
-
-        cmd.ExecuteNonQuery();
+        _context.ProdutosInvestimento.Add(produto);
+        _context.SaveChanges(); // O EF gera o SQL de INSERT
     }
 
-    // UPDATE - Atualizar um produto existente
+    // UPDATE (PUT) - Usando EF
     public void Update(ProdutoInvestimento produto)
     {
-        using var conn = _dbConnection.GetConnection();
-        var sql = "UPDATE investimento_produto SET nome = :nome, tipo = :tipo, risco = :risco, preco = :preco WHERE id = :id";
-        using var cmd = new OracleCommand(sql, conn);
-
-        cmd.Parameters.Add(new OracleParameter("nome", produto.Nome));
-        cmd.Parameters.Add(new OracleParameter("tipo", produto.Tipo));
-        cmd.Parameters.Add(new OracleParameter("risco", produto.Risco));
-        cmd.Parameters.Add(new OracleParameter("preco", produto.Preco));
-        cmd.Parameters.Add(new OracleParameter("id", produto.Id));
-
-        cmd.ExecuteNonQuery();
+        _context.Entry(produto).State = EntityState.Modified;
+        _context.SaveChanges(); // O EF gera o SQL de UPDATE
     }
 
-    // DELETE - Deletar um produto
+    // DELETE - Usando EF
     public void Delete(int id)
     {
-        using var conn = _dbConnection.GetConnection();
-        var sql = "DELETE FROM investimento_produto WHERE id = :id";
-        using var cmd = new OracleCommand(sql, conn);
-
-        cmd.Parameters.Add(new OracleParameter("id", id));
-        cmd.ExecuteNonQuery();
+        // 4. LINQ: .Find() busca pela chave primária
+        var produto = _context.ProdutosInvestimento.Find(id);
+        if (produto != null)
+        {
+            _context.ProdutosInvestimento.Remove(produto);
+            _context.SaveChanges(); // O EF gera o SQL de DELETE
+        }
     }
 }

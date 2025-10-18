@@ -1,0 +1,25 @@
+# Cache e arquivos de configuração do Visual Studio
+# Esses arquivos são específicos da sua máquina e não do projeto.
+.vs/
+
+# Pastas de Build (binários e objetos)
+# Esses arquivos são gerados quando você compila o projeto.
+[Bb]in/
+[Oo]bj/
+
+# Arquivos de usuário específicos (não devem ir para o repo)
+*.suo
+*.user
+*.sln.docstates
+
+sprintcsharp/produtos_exportados.json
+
+# ARQUIVO DE SEGURANÇA CRÍTICO
+# O appsettings.json que criamos contém sua senha do banco de dados!
+# NUNCA envie senhas para o GitHub.
+appsettings.json
+appsettings.Development.json
+
+# Arquivos de sistema operacional (comuns)
+.DS_Store
+Thumbs.db
