@@ -33,13 +33,14 @@ var app = builder.Build();
 // --- 2. Configurar o Pipeline (Middleware) ---
 
 // Habilita o Swagger (Interface gráfica da documentação)
+// Movido para fora do "if" para que funcione no deploy do Render (Produção)
+app.UseSwagger();
+app.UseSwaggerUI();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    // O "if" agora pode ficar vazio
 }
-
-app.UseHttpsRedirection();
 
 // --- 3. Definir os Endpoints (CRUD) ---
 
@@ -77,7 +78,7 @@ app.MapPost("/produtos", (ProdutoInvestimento produto, ProdutoInvestimentoReposi
 app.MapPut("/produtos/{id}", (int id, ProdutoInvestimento produto, ProdutoInvestimentoRepository repo) =>
 {
     if (id != produto.Id) return Results.BadRequest("ID da URL não bate com o ID do corpo");
-
+    
     var existente = repo.GetById(id);
     if (existente == null) return Results.NotFound();
 
@@ -94,7 +95,7 @@ app.MapDelete("/produtos/{id}", (int id, ProdutoInvestimentoRepository repo) =>
 {
     var existente = repo.GetById(id);
     if (existente == null) return Results.NotFound();
-
+    
     repo.Delete(id);
     return Results.NoContent();
 })
@@ -117,6 +118,25 @@ app.MapGet("/investimentos-externos", async (ApiClientService apiClient) =>
 .WithTags("API Externa (Requisito 4)")
 .Produces<List<ProdutoApiExterna>>(200)
 .Produces(502); // Erro
+
+
+// --- NOVO ENDPOINT ADICIONADO ---
+
+app.MapGet("/investimentos-externos/{id}", async (int id, ApiClientService apiClient) =>
+{
+    var produtoExterno = await apiClient.GetProdutoDaApiExternaPorId(id);
+    
+    if (produtoExterno == null)
+    {
+        // Retorna 404 (Não Encontrado) se a API externa não encontrar o produto
+        return Results.NotFound($"Produto com ID {id} não encontrado na API externa.");
+    }
+    
+    return Results.Ok(produtoExterno);
+})
+.WithTags("API Externa (Requisito 4)")
+.Produces<ProdutoApiExterna>(200)
+.Produces(404); // Não Encontrado
 
 
 // --- 5. Rodar a API ---

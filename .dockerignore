@@ -1,0 +1,5 @@
+# Exclui pastas de build, cache do VS e o próprio git
+**/bin/
+**/obj/
+**/.vs/
+**/.git/
