@@ -218,7 +218,10 @@ curl -X POST http://localhost:5000/produtos \
 
 ### Buscar produtos por categoria
 ```bash
+# Categorias disponíveis: Renda Fixa, Ações, Fundos Imobiliários, Fundos, Criptomoedas
 curl http://localhost:5000/produtos/categoria/renda%20fixa
+curl http://localhost:5000/produtos/categoria/acoes
+curl http://localhost:5000/produtos/categoria/fundos
 ```
 
 ### Obter estatísticas

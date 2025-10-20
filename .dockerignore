@@ -1,5 +1,68 @@
-# Exclui pastas de build, cache do VS e o próprio git
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Visual Studio / VSCode
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
 **/bin/
 **/obj/
-**/.vs/
-**/.git/
+**/Debug/
+**/Release/
+**/x64/
+**/x86/
+
+# NuGet
+**/packages/
+*.nupkg
+
+# Arquivos de segurança (senhas)
+**/appsettings.json
+**/appsettings.Development.json
+**/appsettings.Production.json
+
+# Arquivos temporários e logs
+*.log
+build.log
+*.tmp
+*.temp
+
+# Arquivos de dados temporários
+produtos_exportados.json
+
+# Documentação (não necessária no container)
+*.md
+!README.md
+diagrama*.png
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+azure-pipelines.yml
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE configs
+.idea/
+*.sln.iml
+
+# Entity Framework
+**/Migrations/*.Designer.cs
+
+# Testes (se houver)
+**/TestResults/

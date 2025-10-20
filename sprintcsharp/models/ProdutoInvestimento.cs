@@ -6,39 +6,34 @@ namespace sprintcsharp.Models;
 
 /// <summary>
 /// Representa um produto de investimento no sistema
+/// Mapeado para a tabela INVESTIMENTO_PRODUTO existente no Oracle
 /// </summary>
 [Table("INVESTIMENTO_PRODUTO")]
 public class ProdutoInvestimento
 {
     [Key]
     [Column("ID")]
-    public int Id { get; set; }
+    public long Id { get; set; }
 
     [Required]
     [Column("NOME")]
-    [StringLength(200)]
+    [StringLength(255)]
     public string Nome { get; set; } = string.Empty;
 
     [Required]
-    [Column("CATEGORIA")]
+    [Column("TIPO")]
     [StringLength(100)]
-    public string Categoria { get; set; } = string.Empty;
+    public string Tipo { get; set; } = string.Empty;
 
     [Required]
-    [Column("RENTABILIDADE_ANUAL")]
-    public decimal RentabilidadeAnual { get; set; }
-
-    [Required]
-    [Column("NIVEL_RISCO")]
+    [Column("RISCO")]
     [StringLength(50)]
-    public string NivelRisco { get; set; } = string.Empty;
-
-    [Column("DESCRICAO")]
-    [StringLength(500)]
-    public string? Descricao { get; set; }
+    public string Risco { get; set; } = string.Empty;    [Required]
+    [Column("PRECO", TypeName = "NUMBER(19,2)")]
+    public decimal Preco { get; set; }
 
     public override string ToString()
     {
-        return $"[{Id}] {Nome} - {Categoria} | Rentabilidade: {RentabilidadeAnual}% | Risco: {NivelRisco}";
+        return $"[{Id}] {Nome} - {Tipo} | Preço: R$ {Preco:N2} | Risco: {Risco}";
     }
 }

@@ -54,28 +54,26 @@ public class ProdutoInvestimentoRepository
             _context.ProdutosInvestimento.Remove(produto);
             _context.SaveChanges(); // O EF gera o SQL de DELETE
         }
-    }
-
-    // ===== CONSULTAS LINQ AVANÇADAS (Requisito 2: 10%) =====
+    }    // ===== CONSULTAS LINQ AVANÇADAS (Requisito 2: 10%) =====
 
     /// <summary>
-    /// Busca produtos por categoria usando LINQ Where
+    /// Busca produtos por tipo usando LINQ Where
     /// </summary>
-    public List<ProdutoInvestimento> BuscarPorCategoria(string categoria)
+    public List<ProdutoInvestimento> BuscarPorTipo(string tipo)
     {
         return _context.ProdutosInvestimento
-            .Where(p => p.Categoria.ToLower().Contains(categoria.ToLower()))
+            .Where(p => p.Tipo.ToLower().Contains(tipo.ToLower()))
             .ToList();
     }
 
     /// <summary>
-    /// Busca produtos com rentabilidade mínima usando LINQ Where + OrderBy
+    /// Busca produtos com preço mínimo usando LINQ Where + OrderBy
     /// </summary>
-    public List<ProdutoInvestimento> BuscarPorRentabilidadeMinima(decimal rentabilidadeMinima)
+    public List<ProdutoInvestimento> BuscarPorPrecoMinimo(decimal precoMinimo)
     {
         return _context.ProdutosInvestimento
-            .Where(p => p.RentabilidadeAnual >= rentabilidadeMinima)
-            .OrderByDescending(p => p.RentabilidadeAnual)
+            .Where(p => p.Preco >= precoMinimo)
+            .OrderByDescending(p => p.Preco)
             .ToList();
     }
 
@@ -85,7 +83,7 @@ public class ProdutoInvestimentoRepository
     public List<ProdutoInvestimento> BuscarPorRisco(string nivelRisco)
     {
         return _context.ProdutosInvestimento
-            .Where(p => p.NivelRisco.ToLower() == nivelRisco.ToLower())
+            .Where(p => p.Risco.ToLower() == nivelRisco.ToLower())
             .OrderBy(p => p.Nome)
             .ToList();
     }
@@ -100,43 +98,45 @@ public class ProdutoInvestimentoRepository
         return new
         {
             TotalProdutos = produtos.Count(),
-            RentabilidadeMedia = produtos.Any() ? produtos.Average(p => p.RentabilidadeAnual) : 0,
-            MaiorRentabilidade = produtos.Any() ? produtos.Max(p => p.RentabilidadeAnual) : 0,
-            MenorRentabilidade = produtos.Any() ? produtos.Min(p => p.RentabilidadeAnual) : 0,
-            ProdutosPorCategoria = produtos
-                .GroupBy(p => p.Categoria)
-                .Select(g => new { Categoria = g.Key, Quantidade = g.Count() })
+            PrecoMedio = produtos.Any() ? produtos.Average(p => p.Preco) : 0,
+            MaiorPreco = produtos.Any() ? produtos.Max(p => p.Preco) : 0,
+            MenorPreco = produtos.Any() ? produtos.Min(p => p.Preco) : 0,
+            ProdutosPorTipo = produtos
+                .GroupBy(p => p.Tipo)
+                .Select(g => new { Tipo = g.Key, Quantidade = g.Count() })
+                .ToList(),
+            ProdutosPorRisco = produtos
+                .GroupBy(p => p.Risco)
+                .Select(g => new { Risco = g.Key, Quantidade = g.Count() })
                 .ToList()
         };
-    }
-
-    /// <summary>
+    }    /// <summary>
     /// Busca produtos com filtros múltiplos usando LINQ complexo
     /// </summary>
     public List<ProdutoInvestimento> BuscarComFiltros(
-        string? categoria = null, 
+        string? tipo = null, 
         string? risco = null, 
-        decimal? rentabilidadeMinima = null,
+        decimal? precoMinimo = null,
         string? ordenarPor = "nome")
     {
         var query = _context.ProdutosInvestimento.AsQueryable();
 
         // Filtros condicionais
-        if (!string.IsNullOrEmpty(categoria))
-            query = query.Where(p => p.Categoria.ToLower().Contains(categoria.ToLower()));
+        if (!string.IsNullOrEmpty(tipo))
+            query = query.Where(p => p.Tipo.ToLower().Contains(tipo.ToLower()));
 
         if (!string.IsNullOrEmpty(risco))
-            query = query.Where(p => p.NivelRisco.ToLower() == risco.ToLower());
+            query = query.Where(p => p.Risco.ToLower() == risco.ToLower());
 
-        if (rentabilidadeMinima.HasValue)
-            query = query.Where(p => p.RentabilidadeAnual >= rentabilidadeMinima.Value);
+        if (precoMinimo.HasValue)
+            query = query.Where(p => p.Preco >= precoMinimo.Value);
 
         // Ordenação dinâmica
         query = ordenarPor?.ToLower() switch
         {
-            "rentabilidade" => query.OrderByDescending(p => p.RentabilidadeAnual),
-            "categoria" => query.OrderBy(p => p.Categoria),
-            "risco" => query.OrderBy(p => p.NivelRisco),
+            "preco" => query.OrderByDescending(p => p.Preco),
+            "tipo" => query.OrderBy(p => p.Tipo),
+            "risco" => query.OrderBy(p => p.Risco),
             _ => query.OrderBy(p => p.Nome)
         };
 
@@ -153,9 +153,9 @@ public class ProdutoInvestimentoRepository
             {
                 p.Id,
                 p.Nome,
-                p.Categoria,
-                p.RentabilidadeAnual,
-                RiscoSimplificado = p.NivelRisco.Substring(0, 1).ToUpper()
+                p.Tipo,
+                p.Preco,
+                RiscoSimplificado = p.Risco.Substring(0, 1).ToUpper()
             })
             .ToList<object>();
     }

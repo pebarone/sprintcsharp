@@ -1,25 +1,77 @@
-# Cache e arquivos de configuração do Visual Studio
-# Esses arquivos são específicos da sua máquina e não do projeto.
+## Visual Studio Code
+.vscode/
+*.code-workspace
+
+## Visual Studio
 .vs/
-
-# Pastas de Build (binários e objetos)
-# Esses arquivos são gerados quando você compila o projeto.
-[Bb]in/
-[Oo]bj/
-
-# Arquivos de usuário específicos (não devem ir para o repo)
 *.suo
 *.user
+*.userosscache
 *.sln.docstates
 
-sprintcsharp/produtos_exportados.json
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
 
-# ARQUIVO DE SEGURANÇA CRÍTICO
-# O appsettings.json que criamos contém sua senha do banco de dados!
-# NUNCA envie senhas para o GitHub.
+## .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+
+## ARQUIVO DE SEGURANÇA CRÍTICO
+## O appsettings.json contém sua senha do banco de dados!
+## NUNCA envie senhas para o GitHub.
 appsettings.json
 appsettings.Development.json
+appsettings.Production.json
 
-# Arquivos de sistema operacional (comuns)
+## Mas mantenha o arquivo de exemplo
+!appsettings.Example.json
+
+## Arquivos de dados exportados/temporários
+sprintcsharp/produtos_exportados.json
+*.log
+build.log
+
+## Entity Framework Migrations (opcional - descomente se não quiser versionar)
+# **/Migrations/
+
+## Arquivos de sistema operacional
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+Desktop.ini
+
+## Rider (JetBrains)
+.idea/
+*.sln.iml
+
+## Arquivos temporários do Windows
+~$*
+
+## Arquivos de backup
+*.bak
+*.swp
+*~

@@ -11,13 +11,13 @@ public class ProdutoApiExterna
     public int Id { get; set; }
 
     [JsonProperty("nome")]
-    public string Nome { get; set; }
+    public string Nome { get; set; } = string.Empty;
 
     [JsonProperty("tipo")]
-    public string Tipo { get; set; }
+    public string Tipo { get; set; } = string.Empty;
 
     [JsonProperty("risco")]
-    public string Risco { get; set; }
+    public string Risco { get; set; } = string.Empty;
 
     [JsonProperty("preco")]
     public decimal Preco { get; set; }

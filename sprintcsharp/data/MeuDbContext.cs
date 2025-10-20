@@ -23,6 +23,7 @@ public class MeuDbContext : DbContext
         base.OnModelCreating(modelBuilder);
 
         // Configuração explícita da entidade ProdutoInvestimento
+        // Mapeia para a tabela INVESTIMENTO_PRODUTO existente no Oracle
         modelBuilder.Entity<ProdutoInvestimento>(entity =>
         {
             entity.ToTable("INVESTIMENTO_PRODUTO");
@@ -35,27 +36,23 @@ public class MeuDbContext : DbContext
             
             entity.Property(e => e.Nome)
                 .HasColumnName("NOME")
-                .HasMaxLength(200)
+                .HasMaxLength(255)
                 .IsRequired();
             
-            entity.Property(e => e.Categoria)
-                .HasColumnName("CATEGORIA")
+            entity.Property(e => e.Tipo)
+                .HasColumnName("TIPO")
                 .HasMaxLength(100)
                 .IsRequired();
             
-            entity.Property(e => e.RentabilidadeAnual)
-                .HasColumnName("RENTABILIDADE_ANUAL")
-                .HasPrecision(5, 2)
-                .IsRequired();
-            
-            entity.Property(e => e.NivelRisco)
-                .HasColumnName("NIVEL_RISCO")
+            entity.Property(e => e.Risco)
+                .HasColumnName("RISCO")
                 .HasMaxLength(50)
                 .IsRequired();
             
-            entity.Property(e => e.Descricao)
-                .HasColumnName("DESCRICAO")
-                .HasMaxLength(500);
+            entity.Property(e => e.Preco)
+                .HasColumnName("PRECO")
+                .HasPrecision(19, 2)
+                .IsRequired();
         });
     }
 }

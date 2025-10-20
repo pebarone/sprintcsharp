@@ -138,27 +138,27 @@ app.MapDelete("/produtos/{id}", (int id, ProdutoInvestimentoRepository repo) =>
 
 // ===== ENDPOINTS COM LINQ AVANÇADO (Requisito 2: 10%) =====
 
-// GET /produtos/categoria/{categoria} - Buscar por categoria
-app.MapGet("/produtos/categoria/{categoria}", (string categoria, ProdutoInvestimentoRepository repo) =>
+// GET /produtos/tipo/{tipo} - Buscar por tipo
+app.MapGet("/produtos/tipo/{tipo}", (string tipo, ProdutoInvestimentoRepository repo) =>
 {
-    var produtos = repo.BuscarPorCategoria(categoria);
-    return produtos.Any() ? Results.Ok(produtos) : Results.NotFound("Nenhum produto encontrado nesta categoria.");
+    var produtos = repo.BuscarPorTipo(tipo);
+    return produtos.Any() ? Results.Ok(produtos) : Results.NotFound("Nenhum produto encontrado neste tipo.");
 })
-.WithName("BuscarPorCategoria")
+.WithName("BuscarPorTipo")
 .WithTags("Consultas LINQ Avançadas")
-.WithDescription("Busca produtos por categoria usando LINQ Where")
+.WithDescription("Busca produtos por tipo usando LINQ Where (Tipos: Renda Fixa, FII, Ações, BDR, Cripto)")
 .Produces<List<ProdutoInvestimento>>(200)
 .Produces(404);
 
-// GET /produtos/rentabilidade/{minima} - Buscar por rentabilidade mínima
-app.MapGet("/produtos/rentabilidade/{minima}", (decimal minima, ProdutoInvestimentoRepository repo) =>
+// GET /produtos/preco/{minimo} - Buscar por preço mínimo
+app.MapGet("/produtos/preco/{minimo}", (decimal minimo, ProdutoInvestimentoRepository repo) =>
 {
-    var produtos = repo.BuscarPorRentabilidadeMinima(minima);
+    var produtos = repo.BuscarPorPrecoMinimo(minimo);
     return Results.Ok(produtos);
 })
-.WithName("BuscarPorRentabilidade")
+.WithName("BuscarPorPreco")
 .WithTags("Consultas LINQ Avançadas")
-.WithDescription("Busca produtos com rentabilidade mínima usando LINQ Where + OrderByDescending")
+.WithDescription("Busca produtos com preço mínimo usando LINQ Where + OrderByDescending")
 .Produces<List<ProdutoInvestimento>>(200);
 
 // GET /produtos/risco/{nivel} - Buscar por nível de risco
@@ -169,7 +169,7 @@ app.MapGet("/produtos/risco/{nivel}", (string nivel, ProdutoInvestimentoReposito
 })
 .WithName("BuscarPorRisco")
 .WithTags("Consultas LINQ Avançadas")
-.WithDescription("Busca produtos por nível de risco usando LINQ Where + OrderBy")
+.WithDescription("Busca produtos por nível de risco usando LINQ Where + OrderBy (Riscos: Baixo, Médio, Alto)")
 .Produces<List<ProdutoInvestimento>>(200)
 .Produces(404);
 
@@ -185,9 +185,9 @@ app.MapGet("/produtos/estatisticas", (ProdutoInvestimentoRepository repo) =>
 .Produces<object>(200);
 
 // GET /produtos/buscar - Busca com múltiplos filtros
-app.MapGet("/produtos/buscar", (ProdutoInvestimentoRepository repo, string? categoria = null, string? risco = null, decimal? rentabilidadeMinima = null, string? ordenarPor = null) =>
+app.MapGet("/produtos/buscar", (ProdutoInvestimentoRepository repo, string? tipo = null, string? risco = null, decimal? precoMinimo = null, string? ordenarPor = null) =>
 {
-    var produtos = repo.BuscarComFiltros(categoria, risco, rentabilidadeMinima, ordenarPor);
+    var produtos = repo.BuscarComFiltros(tipo, risco, precoMinimo, ordenarPor);
     return Results.Ok(produtos);
 })
 .WithName("BuscarComFiltros")
