@@ -21,7 +21,33 @@ builder.Services.AddScoped<ProdutoInvestimentoRepository>();
 
 // Adiciona o Swagger (Requisito 1: API e Documentação)
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API de Investimentos - Sprint C#",
+        Version = "v1",
+        Description = @"
+## 📊 API completa de Gestão de Produtos de Investimento
+
+### Requisitos Atendidos:
+- ✅ **ASP.NET Core Web API** com Entity Framework
+- ✅ **CRUD Completo** de Produtos de Investimento
+- ✅ **Consultas LINQ Avançadas** (filtros, ordenação, agregação, paginação)
+- ✅ **Integração com API Externa** (dados de investimentos)
+- ✅ **Documentação Swagger** completa
+- ✅ **Publicação em Cloud** (via Docker)
+
+### Desenvolvido por:
+FIAP - Curso de Análise e Desenvolvimento de Sistemas
+",
+        Contact = new Microsoft.OpenApi.Models.OpenApiContact
+        {
+            Name = "Suporte FIAP",
+            Email = "suporte@fiap.com.br"
+        }
+    });
+});
 
 // Adiciona o HttpClient (para o Requisito 4)
 builder.Services.AddHttpClient();
@@ -33,9 +59,14 @@ var app = builder.Build();
 // --- 2. Configurar o Pipeline (Middleware) ---
 
 // Habilita o Swagger (Interface gráfica da documentação)
-// Movido para fora do "if" para que funcione no deploy do Render (Produção)
+// Movido para fora do "if" para que funcione no deploy do Render/Azure (Produção)
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "API Investimentos v1");
+    options.RoutePrefix = string.Empty; // Swagger na raiz (http://localhost:5000/)
+    options.DocumentTitle = "API de Investimentos - Documentação";
+});
 
 if (app.Environment.IsDevelopment())
 {
@@ -44,8 +75,9 @@ if (app.Environment.IsDevelopment())
 
 // --- 3. Definir os Endpoints (CRUD) ---
 
-// Endpoint principal
-app.MapGet("/", () => "API de Produtos de Investimento está online.");
+// Endpoint principal - Redireciona para o Swagger
+app.MapGet("/", () => Results.Redirect("/swagger"))
+.ExcludeFromDescription();
 
 // GET /produtos (Listar todos)
 app.MapGet("/produtos", (ProdutoInvestimentoRepository repo) =>
@@ -102,6 +134,88 @@ app.MapDelete("/produtos/{id}", (int id, ProdutoInvestimentoRepository repo) =>
 .WithTags("CRUD Produtos (EF Core)")
 .Produces(204)
 .Produces(404);
+
+
+// ===== ENDPOINTS COM LINQ AVANÇADO (Requisito 2: 10%) =====
+
+// GET /produtos/categoria/{categoria} - Buscar por categoria
+app.MapGet("/produtos/categoria/{categoria}", (string categoria, ProdutoInvestimentoRepository repo) =>
+{
+    var produtos = repo.BuscarPorCategoria(categoria);
+    return produtos.Any() ? Results.Ok(produtos) : Results.NotFound("Nenhum produto encontrado nesta categoria.");
+})
+.WithName("BuscarPorCategoria")
+.WithTags("Consultas LINQ Avançadas")
+.WithDescription("Busca produtos por categoria usando LINQ Where")
+.Produces<List<ProdutoInvestimento>>(200)
+.Produces(404);
+
+// GET /produtos/rentabilidade/{minima} - Buscar por rentabilidade mínima
+app.MapGet("/produtos/rentabilidade/{minima}", (decimal minima, ProdutoInvestimentoRepository repo) =>
+{
+    var produtos = repo.BuscarPorRentabilidadeMinima(minima);
+    return Results.Ok(produtos);
+})
+.WithName("BuscarPorRentabilidade")
+.WithTags("Consultas LINQ Avançadas")
+.WithDescription("Busca produtos com rentabilidade mínima usando LINQ Where + OrderByDescending")
+.Produces<List<ProdutoInvestimento>>(200);
+
+// GET /produtos/risco/{nivel} - Buscar por nível de risco
+app.MapGet("/produtos/risco/{nivel}", (string nivel, ProdutoInvestimentoRepository repo) =>
+{
+    var produtos = repo.BuscarPorRisco(nivel);
+    return produtos.Any() ? Results.Ok(produtos) : Results.NotFound("Nenhum produto encontrado com este nível de risco.");
+})
+.WithName("BuscarPorRisco")
+.WithTags("Consultas LINQ Avançadas")
+.WithDescription("Busca produtos por nível de risco usando LINQ Where + OrderBy")
+.Produces<List<ProdutoInvestimento>>(200)
+.Produces(404);
+
+// GET /produtos/estatisticas - Estatísticas agregadas
+app.MapGet("/produtos/estatisticas", (ProdutoInvestimentoRepository repo) =>
+{
+    var stats = repo.ObterEstatisticas();
+    return Results.Ok(stats);
+})
+.WithName("ObterEstatisticas")
+.WithTags("Consultas LINQ Avançadas")
+.WithDescription("Retorna estatísticas agregadas usando LINQ (Count, Average, Max, Min, GroupBy)")
+.Produces<object>(200);
+
+// GET /produtos/buscar - Busca com múltiplos filtros
+app.MapGet("/produtos/buscar", (ProdutoInvestimentoRepository repo, string? categoria = null, string? risco = null, decimal? rentabilidadeMinima = null, string? ordenarPor = null) =>
+{
+    var produtos = repo.BuscarComFiltros(categoria, risco, rentabilidadeMinima, ordenarPor);
+    return Results.Ok(produtos);
+})
+.WithName("BuscarComFiltros")
+.WithTags("Consultas LINQ Avançadas")
+.WithDescription("Busca com filtros múltiplos e ordenação dinâmica usando LINQ complexo")
+.Produces<List<ProdutoInvestimento>>(200);
+
+// GET /produtos/resumo - Projeção de dados
+app.MapGet("/produtos/resumo", (ProdutoInvestimentoRepository repo) =>
+{
+    var resumo = repo.ObterResumo();
+    return Results.Ok(resumo);
+})
+.WithName("ObterResumo")
+.WithTags("Consultas LINQ Avançadas")
+.WithDescription("Retorna resumo dos produtos usando LINQ Select (projeção)")
+.Produces<List<object>>(200);
+
+// GET /produtos/paginado - Paginação
+app.MapGet("/produtos/paginado", (ProdutoInvestimentoRepository repo, int pagina = 1, int itensPorPagina = 10) =>
+{
+    var resultado = repo.ObterProdutosPaginados(pagina, itensPorPagina);
+    return Results.Ok(resultado);
+})
+.WithName("ObterProdutosPaginados")
+.WithTags("Consultas LINQ Avançadas")
+.WithDescription("Retorna produtos paginados usando LINQ Skip e Take")
+.Produces<object>(200);
 
 
 // --- 4. Endpoint para o Requisito 4 (Conectar com outra API) ---

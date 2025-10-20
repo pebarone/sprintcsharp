@@ -1,20 +1,44 @@
 // Local: sprintcsharp/Models/ProdutoInvestimento.cs
-namespace sprintcsharp.Models; // O namespace corresponde ao local do arquivo
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-// Esta classe representa a tabela 'investimento_produto' do banco de dados.
+namespace sprintcsharp.Models;
+
+/// <summary>
+/// Representa um produto de investimento no sistema
+/// </summary>
+[Table("INVESTIMENTO_PRODUTO")]
 public class ProdutoInvestimento
 {
-    // As propriedades da classe correspondem às colunas da sua tabela.
+    [Key]
+    [Column("ID")]
     public int Id { get; set; }
-    public string Nome { get; set; }
-    public string Tipo { get; set; }
-    public string Risco { get; set; }
-    public decimal Preco { get; set; }
 
-    // Este é um método auxiliar para facilitar a exibição do objeto no console.
+    [Required]
+    [Column("NOME")]
+    [StringLength(200)]
+    public string Nome { get; set; } = string.Empty;
+
+    [Required]
+    [Column("CATEGORIA")]
+    [StringLength(100)]
+    public string Categoria { get; set; } = string.Empty;
+
+    [Required]
+    [Column("RENTABILIDADE_ANUAL")]
+    public decimal RentabilidadeAnual { get; set; }
+
+    [Required]
+    [Column("NIVEL_RISCO")]
+    [StringLength(50)]
+    public string NivelRisco { get; set; } = string.Empty;
+
+    [Column("DESCRICAO")]
+    [StringLength(500)]
+    public string? Descricao { get; set; }
+
     public override string ToString()
     {
-        // O ':C' formata o preço como moeda (ex: R$ 108,50)
-        return $"ID: {Id}, Nome: {Nome}, Tipo: {Tipo}, Risco: {Risco}, Preço: {Preco:C}";
+        return $"[{Id}] {Nome} - {Categoria} | Rentabilidade: {RentabilidadeAnual}% | Risco: {NivelRisco}";
     }
 }
