@@ -46,24 +46,7 @@ builder.Services.AddSwaggerGen(options =>
         Title = "API de Investimentos - Sprint C#",
         Version = "v1",
         Description = @"
-## 📊 API completa de Gestão de Produtos de Investimento
-
-### Requisitos Atendidos:
-- ✅ **ASP.NET Core Web API** com Entity Framework
-- ✅ **CRUD Completo** de Produtos de Investimento
-- ✅ **Consultas LINQ Avançadas** (filtros, ordenação, agregação, paginação)
-- ✅ **Integração com API Externa** (dados de investimentos)
-- ✅ **Documentação Swagger** completa
-- ✅ **Publicação em Cloud** (via Docker)
-
-### Desenvolvido por:
-FIAP - Curso de Análise e Desenvolvimento de Sistemas
-",
-        Contact = new Microsoft.OpenApi.Models.OpenApiContact
-        {
-            Name = "Suporte FIAP",
-            Email = "suporte@fiap.com.br"
-        }
+## 📊 API completa de Gestão de Produtos de Investimento",
     });
 });
 
