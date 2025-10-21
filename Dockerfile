@@ -26,5 +26,8 @@ COPY --from=build /app/publish .
 # O .NET 8 em containers usa a porta 8080 por padrão
 EXPOSE 8080
 
+# Define a variável de ambiente para a porta
+ENV ASPNETCORE_URLS=http://+:8080
+
 # Define o comando que será executado quando o container iniciar
 ENTRYPOINT ["dotnet", "sprintcsharp.dll"]

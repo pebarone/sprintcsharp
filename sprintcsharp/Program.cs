@@ -11,10 +11,28 @@ var builder = WebApplication.CreateBuilder(args);
 // Pega a string de conexão do appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("OracleConnection");
 
+// Log da connection string (mascarar senha em produção)
+if (!string.IsNullOrEmpty(connectionString))
+{
+    var preview = connectionString.Length > 50 ? connectionString.Substring(0, 50) : connectionString;
+    Console.WriteLine($"[DEBUG] Connection String: {preview}...");
+}
+else
+{
+    Console.WriteLine("[WARN] Connection String não configurada!");
+}
+
 // Adiciona o DbContext (Requisito 1: EF Core)
 builder.Services.AddDbContext<MeuDbContext>(options =>
-    options.UseOracle(connectionString)
-);
+{
+    options.UseOracle(connectionString);
+    // Habilita logs detalhados de SQL em Development
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+        options.EnableDetailedErrors();
+    }
+});
 
 // Adiciona o Repositório (que agora usa EF)
 builder.Services.AddScoped<ProdutoInvestimentoRepository>();
@@ -57,6 +75,35 @@ builder.Services.AddScoped<ApiClientService>();
 var app = builder.Build();
 
 // --- 2. Configurar o Pipeline (Middleware) ---
+
+// Middleware de tratamento de exceções global
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.StatusCode = 500;
+        context.Response.ContentType = "application/json";
+        
+        var exceptionHandlerPathFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerPathFeature>();
+        var exception = exceptionHandlerPathFeature?.Error;
+        
+        var errorResponse = new
+        {
+            error = "Internal Server Error",
+            message = exception?.Message ?? "Erro desconhecido",
+            details = app.Environment.IsDevelopment() ? exception?.StackTrace : null
+        };
+        
+        Console.WriteLine($"[ERRO] {exception?.Message}");
+        Console.WriteLine($"[ERRO STACK] {exception?.StackTrace}");
+        
+        await context.Response.WriteAsJsonAsync(errorResponse);
+    });
+});
+
+// Log de inicialização
+Console.WriteLine("[INFO] Aplicação iniciando...");
+Console.WriteLine($"[INFO] Ambiente: {app.Environment.EnvironmentName}");
 
 // Habilita o Swagger (Interface gráfica da documentação)
 // Movido para fora do "if" para que funcione no deploy do Render/Azure (Produção)
