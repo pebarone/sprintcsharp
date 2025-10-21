@@ -168,46 +168,6 @@ docker run -p 8080:8080 -e ConnectionStrings__OracleConnection="User Id=SEU_USER
 
 ---
 
-## ☁️ Publicação em Cloud
-
-### Opção 1: Azure App Service
-
-```bash
-# Login no Azure
-az login
-
-# Criar Resource Group
-az group create --name rg-investimentos --location brazilsouth
-
-# Criar App Service Plan
-az appservice plan create --name plan-investimentos --resource-group rg-investimentos --sku B1 --is-linux
-
-# Deploy via Docker
-az webapp create --resource-group rg-investimentos --plan plan-investimentos --name api-investimentos-fiap --deployment-container-image-name api-investimentos:latest
-```
-
-### Opção 2: Render.com
-
-1. Conecte seu repositório GitHub no [Render](https://render.com)
-2. Crie um novo **Web Service**
-3. Selecione **Docker** como ambiente
-4. Configure as variáveis de ambiente:
-   - `ConnectionStrings__OracleConnection`: sua connection string
-5. Deploy automático!
-
-### Opção 3: AWS ECS
-
-```bash
-# Push para ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.us-east-1.amazonaws.com
-
-docker tag api-investimentos:latest <account-id>.dkr.ecr.us-east-1.amazonaws.com/api-investimentos:latest
-
-docker push <account-id>.dkr.ecr.us-east-1.amazonaws.com/api-investimentos:latest
-```
-
----
-
 ## 📚 Exemplos de Uso
 
 ### Criar um novo produto
@@ -268,7 +228,7 @@ curl http://localhost:5000/investimentos-externos
 Você pode testar a API de 3 formas:
 
 ### 1. Swagger UI (Recomendado)
-Acesse `/swagger` e teste interativamente todos os endpoints.
+Acesse `/index.html` e teste interativamente todos os endpoints.
 
 ### 2. Postman
 Importe a coleção OpenAPI de `/swagger/v1/swagger.json`.
