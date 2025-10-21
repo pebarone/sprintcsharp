@@ -250,3 +250,4 @@ c:\Users\labsfiap\Desktop\sprintcsharp\sprintcsharp\obj\Debug\net8.0\refint\spri
 c:\Users\labsfiap\Desktop\sprintcsharp\sprintcsharp\obj\Debug\net8.0\sprintcsharp.pdb
 c:\Users\labsfiap\Desktop\sprintcsharp\sprintcsharp\obj\Debug\net8.0\sprintcsharp.genruntimeconfig.cache
 c:\Users\labsfiap\Desktop\sprintcsharp\sprintcsharp\obj\Debug\net8.0\ref\sprintcsharp.dll
+C:\Users\augus\Desktop\sprintcsharp\sprintcsharp\bin\Debug\net8.0\appsettings.Example.json

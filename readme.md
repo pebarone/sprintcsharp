@@ -1,3 +1,13 @@
+## 👥 Equipe de Desenvolvimento
+
+## Integrantes
+- Nome: Pedro Augusto Carneiro Barone Bomfim - RM: 99781
+- Nome: João Pedro de Albuquerque Oliveira - RM: 551579
+- Nome: Matheus Augusto Santos Rego - RM:551466
+- Nome: Ian Cancian Nachtergaele - RM: 98387
+
+
+
 # 📊 API de Gestão de Investimentos - Sprint C#
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
@@ -146,18 +156,15 @@ Abra o navegador em: **http://localhost:5000** ou **https://localhost:5001**
 
 ## 🐳 Deploy com Docker
 
-### Build da imagem
-```bash
-docker build -t api-investimentos .
-```
-
 ### Executar o container
 ```bash
-docker run -p 8080:8080 -e ConnectionStrings__OracleConnection="User Id=...;Password=...;" api-investimentos
+docker run -p 8080:8080 -e ConnectionStrings__OracleConnection="User Id=SEU_USER;Password=SUA_SENHA;Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=oracle.fiap.com.br)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=ORCL)))" pbrnx/sprint-csharp:latest
 ```
 
 ### Acesse
 **http://localhost:8080**
+
+> **Nota**: A imagem Docker já está configurada e disponível no Docker Hub em `pbrnx/sprint-csharp:latest`. O parâmetro `-p 8080:8080` mapeia a porta 8080 do container para a porta 8080 do seu host.
 
 ---
 
@@ -305,59 +312,6 @@ _context.ProdutosInvestimento.Select(p => new { p.Id, p.Nome })
 _context.ProdutosInvestimento.Skip(10).Take(10)
 ```
 
----
 
-## 🎯 Melhorias Futuras
 
-- [ ] Autenticação JWT
-- [ ] Rate Limiting
-- [ ] Cache com Redis
-- [ ] Logs estruturados (Serilog)
-- [ ] Testes unitários (xUnit)
-- [ ] CI/CD com GitHub Actions
-- [ ] Health Checks
-- [ ] Versionamento de API (v2, v3...)
 
----
-
-## 👥 Equipe de Desenvolvimento
-
-**Desenvolvido por**: [Seu Nome]  
-**RM**: [Seu RM]  
-**Turma**: [Sua Turma]  
-**Disciplina**: Sprint C# - FIAP  
-**Professor**: [Nome do Professor]
-
----
-
-## 📞 Suporte
-
-Para dúvidas ou problemas:
-- **Email**: seu-email@fiap.com.br
-- **GitHub Issues**: [Criar Issue](https://github.com/pbrnx/sprintcsharp/issues)
-
----
-
-## 📄 Licença
-
-Este projeto foi desenvolvido para fins educacionais como parte do curso de **Análise e Desenvolvimento de Sistemas** da FIAP.
-
----
-
-## 🙏 Agradecimentos
-
-- FIAP - Faculdade de Informática e Administração Paulista
-- Microsoft - Documentação do .NET e Entity Framework
-- Oracle - Banco de dados e documentação
-
----
-
-**⭐ Se este projeto foi útil, deixe uma estrela no GitHub!**
-
-**🔗 Link do Repositório**: https://github.com/pbrnx/sprintcsharp
-
-**🌐 API em Produção**: [URL após deploy]
-
----
-
-*Última atualização: Outubro/2025*
